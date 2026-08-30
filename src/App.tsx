@@ -17,7 +17,7 @@ const isDining = (activity: Activity) => diningCategories.has(activity.category)
 
 function photoFor(activity: Activity) {
   if (isDining(activity)) return 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80'
-  if (['helicopter-tour', 'reunion-tower'].includes(activity.id)) return 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=900&q=80'
+  if (['reunion-tower'].includes(activity.id)) return 'https://reuniontower.com/wp-content/uploads/2021/03/GeOFamily_600x300.jpg'
   if (['go-ape', 'fossil-rim', 'arboretum', 'katy-trail', 'horseback'].includes(activity.id)) return 'https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=900&q=80'
   if (['sixth-floor', 'att-stadium-tour', 'museum-illusions'].includes(activity.id)) return 'https://images.unsplash.com/photo-1466442929976-97f336a657be?auto=format&fit=crop&w=900&q=80'
   if (['ifly', 'future-flight', 'summit-climbing', 'smash-n-bash', 'battlefield-nerf'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
@@ -32,6 +32,8 @@ function photoFor(activity: Activity) {
   if (['gun-experience'].includes(activity.id)) return 'https://i0.wp.com/texasgunexperience.com/wp-content/uploads/2023/08/31.png?fit=600%2C350&ssl=1'
   if (['mountain-bike'].includes(activity.id)) return 'https://www.bikemart.com/cdn/shop/files/Talon1_Desktop2_Web_MY21Talon_CY20.jpg?v=1737475476&width=2400'
   if (['stockyards'].includes(activity.id)) return 'https://www.fortworthstockyards.org/sites/default/files/styles/large/public/2022-04/Herd.jpeg?itok=W9RTM4AR'
+  if (['helicopter-tour'].includes(activity.id)) return 'https://static.wixstatic.com/media/66d9a0_64fca4c8a34d40b58c7f5495b668ee22~mv2.jpg/v1/fill/w_1204,h_1152,al_c,q_85,enc_avif,quality_auto/66d9a0_64fca4c8a34d40b58c7f5495b668ee22~mv2.jpg'
+  if (['ifly'].includes(activity.id)) return 'https://www.iflyworld.com/_next/image?url=https%3A%2F%2Fcdn-production-products.iflyworld.com%2F2_Flight_Experience_cdn_updated_9f44e678f7.jpg&w=828&q=75'
   return 'https://images.unsplash.com/photo-1531219432768-9f540ce91ef3?auto=format&fit=crop&w=900&q=80'
 }
 
