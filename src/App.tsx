@@ -20,8 +20,10 @@ function photoFor(activity: Activity) {
   if (['helicopter-tour', 'reunion-tower'].includes(activity.id)) return 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=900&q=80'
   if (['mountain-bike', 'go-ape', 'fossil-rim', 'arboretum', 'katy-trail', 'horseback'].includes(activity.id)) return 'https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=900&q=80'
   if (['sixth-floor', 'att-stadium-tour', 'museum-illusions'].includes(activity.id)) return 'https://images.unsplash.com/photo-1466442929976-97f336a657be?auto=format&fit=crop&w=900&q=80'
-  if (['zero-g', 'ifly', 'future-flight', 'summit-climbing', 'smash-n-bash', 'battlefield-nerf'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
-  if (['fowling'].includes(activity.id)) return 'https://fowlingwarehouse.com/wp-content/uploads/2021/08/football-pins-4.png'
+  if (['ifly', 'future-flight', 'summit-climbing', 'smash-n-bash', 'battlefield-nerf'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
+  if (['fowling'].includes(activity.id)) return 'https://fowlingwarehouse.com/wp-content/uploads/2021/08/team-playing.png'
+  if (['zero-g'].includes(activity.id)) return 'https://cdn.prod.website-files.com/66ba4df8caa0bf31f1be9e30/66dd4212867be43e386aa31b_20210430_Steve-Boxall_Zero-G_Research_FLL_ZG536_Flight_8072.webp'
+  if (['speedway'].includes(activity.id)) return 'https://www.texasmotorspeedway.com/images/links/teamtexasad.png'
   return 'https://images.unsplash.com/photo-1531219432768-9f540ce91ef3?auto=format&fit=crop&w=900&q=80'
 }
 
