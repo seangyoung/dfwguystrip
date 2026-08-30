@@ -18,14 +18,13 @@ const isDining = (activity: Activity) => diningCategories.has(activity.category)
 function photoFor(activity: Activity) {
   if (isDining(activity)) return 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80'
   if (['reunion-tower'].includes(activity.id)) return 'https://reuniontower.com/wp-content/uploads/2021/03/GeOFamily_600x300.jpg'
-  if (['fossil-rim'].includes(activity.id)) return 'https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=900&q=80'
+  if (['fossil-rim'].includes(activity.id)) return 'https://fossilrim.org/wp-content/uploads/2026/03/DSC02452-scaled.jpg'
   if (['katy-trail'].includes(activity.id)) return 'https://katytraildallas.org/images/about-the-trail__blog.avif'
   if (['horseback'].includes(activity.id)) return 'https://fortworthstockyards.com/app/uploads/2019/05/STOCKYARDS-STABLES-scaled.jpg'
   if (['att-stadium-tour'].includes(activity.id)) return 'https://attstadium.com/wp-content/uploads/2023/10/tours-rally-days.jpg'
   if (['future-flight'].includes(activity.id)) return 'https://isteam.wsimg.com/ip/01442896-7b29-45a6-9053-1c952d3da757/flt1.jpg/:/rs=w:2320'
-  if (['summit-climbing'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
-  if (['smash-n-bash'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
-  if (['battlefield-nerf'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
+  if (['summit-climbing'].includes(activity.id)) return 'https://movementgyms.com/app/uploads/2025/12/Large-Bouldering_Harlem_MVMT_2024-35-1024x683.jpg'
+  if (['smash-n-bash'].includes(activity.id)) return 'https://www-1561s.bookeo.com/bookeo/cfile/41561HMWHJJ17B5B6AB3B9/1729463785428_FMUE9H9EAA4R3K3FN373UWK6AWR3FFU7_1000_400.jpg'
   if (['fowling'].includes(activity.id)) return 'https://fowlingwarehouse.com/wp-content/uploads/2021/08/team-playing.png'
   if (['zero-g'].includes(activity.id)) return 'https://cdn.prod.website-files.com/66ba4df8caa0bf31f1be9e30/66dd4212867be43e386aa31b_20210430_Steve-Boxall_Zero-G_Research_FLL_ZG536_Flight_8072.webp'
   if (['speedway'].includes(activity.id)) return 'https://www.texasmotorspeedway.com/images/links/teamtexasad.png'
@@ -48,6 +47,8 @@ function photoFor(activity: Activity) {
   if (['national-videogame-museum'].includes(activity.id)) return 'https://nvmusa.org/wp-content/uploads/2023/05/NVM-Statue1-scaled.jpg'
   if (['escape-game'].includes(activity.id)) return 'https://cdn.theescapegame.com/images/3bootchj/production/4c2a5198982e895380adc729fa8818bc3b223345-5760x3840.jpg?rect=1600,0,2560,3840&w=1200&h=1800&q=60&auto=format'
   if (['buc-ees'].includes(activity.id)) return 'https://buc-ees.com/wp-content/uploads/2020/02/inside-bucees-store.png'
+  if (['meow-wolf'].includes(activity.id)) return 'https://cdn.prod.website-files.com/5daf07de1a61d008bdf579d8/69403ffcf3c63c38bd6bacee_Web_Large-GVH_PrimeMateria_DetailShots_6-16-25_FAMBOFilms_9A8305n.avif'
+  if (['andretti'].includes(activity.id)) return 'https://transform.octanecdn.com/crop/1800x1800/https://octanecdn.com/andrettikartingcom/aikg_durham_172.jpg'
   return 'https://images.unsplash.com/photo-1531219432768-9f540ce91ef3?auto=format&fit=crop&w=900&q=80'
 }
 
