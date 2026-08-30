@@ -18,7 +18,7 @@ const isDining = (activity: Activity) => diningCategories.has(activity.category)
 function photoFor(activity: Activity) {
   if (isDining(activity)) return 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80'
   if (['helicopter-tour', 'reunion-tower'].includes(activity.id)) return 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=900&q=80'
-  if (['mountain-bike', 'go-ape', 'fossil-rim', 'arboretum', 'katy-trail', 'horseback'].includes(activity.id)) return 'https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=900&q=80'
+  if (['go-ape', 'fossil-rim', 'arboretum', 'katy-trail', 'horseback'].includes(activity.id)) return 'https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=900&q=80'
   if (['sixth-floor', 'att-stadium-tour', 'museum-illusions'].includes(activity.id)) return 'https://images.unsplash.com/photo-1466442929976-97f336a657be?auto=format&fit=crop&w=900&q=80'
   if (['ifly', 'future-flight', 'summit-climbing', 'smash-n-bash', 'battlefield-nerf'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
   if (['fowling'].includes(activity.id)) return 'https://fowlingwarehouse.com/wp-content/uploads/2021/08/team-playing.png'
@@ -27,6 +27,11 @@ function photoFor(activity: Activity) {
   if (['six-flags'].includes(activity.id)) return 'https://www.sixflags.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fbsnrdz4t%2Fproduction%2F3a7a34ee12bada73ba315022234723f400ce241d-1633x980.jpg%3Fw%3D850%26h%3D490%26q%3D80%26fit%3Dclip%26auto%3Dformat%26dpr%3D2&w=1920&q=75'
   if (['state-fair'].includes(activity.id)) return 'https://bigtex.com/wp-content/uploads/2025/05/2025_WEB_BuyTickets_NEW_Header-480x120.jpg'
   if (['scarborough'].includes(activity.id)) return 'https://www.srfestival.com/wp-content/uploads/2024/11/cover-photo-front-gate.png'
+  if (['mustang-magic'].includes(activity.id)) return 'https://cdn.saffire.com/images.ashx?t=ig&rid=FortWorthStockShow&i=01-24-2026-DF-212.JPG&cb=f5603ee2&h=330&w=330&cropbox=1&cropboxhpos=center'
+  if (['goodguys'].includes(activity.id)) return 'https://good-guys.com/images/2019/09/27/lsn-crowd-2.jpg'
+  if (['gun-experience'].includes(activity.id)) return 'https://i0.wp.com/texasgunexperience.com/wp-content/uploads/2023/08/31.png?fit=600%2C350&ssl=1'
+  if (['mountain-bike'].includes(activity.id)) return 'https://www.bikemart.com/cdn/shop/files/Talon1_Desktop2_Web_MY21Talon_CY20.jpg?v=1737475476&width=2400'
+  if (['stockyards'].includes(activity.id)) return 'https://www.fortworthstockyards.org/sites/default/files/styles/large/public/2022-04/Herd.jpeg?itok=W9RTM4AR'
   return 'https://images.unsplash.com/photo-1531219432768-9f540ce91ef3?auto=format&fit=crop&w=900&q=80'
 }
 
