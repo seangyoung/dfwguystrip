@@ -20,6 +20,14 @@ describe('seed trip content', () => {
     ]))
   })
 
+  it('includes the new adventures, landmarks, and food tour', () => {
+    const ids = activities.map(activity => activity.id)
+    expect(ids).toEqual(expect.arrayContaining([
+      'mountain-bike', 'helicopter-tour', 'ifly', 'activate', 'ebike-tour',
+      'museum-illusions', 'sixth-floor', 'go-ape', 'att-stadium-tour', 'reunion-tower', 'uptown-eats',
+    ]))
+  })
+
   it('models Zero-G and skydiving as an either-or slot', () => {
     expect(itineraries.find(itinerary => itinerary.id === 'premium')?.days[1].stops[0]).toMatch(/Zero-G OR Skydiving/)
   })
