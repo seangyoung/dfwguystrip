@@ -28,6 +28,16 @@ describe('seed trip content', () => {
     ]))
   })
 
+  it('includes the latest participant-requested catalog additions', () => {
+    const ids = activities.map(activity => activity.id)
+    expect(ids).toEqual(expect.arrayContaining([
+      'chapel-thanksgiving', 'national-videogame-museum', 'escape-game', 'las-colinas-gondola',
+      'arboretum', 'katy-trail', 'buc-ees', 'fowling', 'future-flight', 'horseback',
+      'smash-n-bash', 'summit-climbing', 'battlefield-nerf', 'moviehouse-eatery',
+    ]))
+    expect(ids).not.toContain('public-school-214')
+  })
+
   it('models Zero-G and skydiving as an either-or slot', () => {
     expect(itineraries.find(itinerary => itinerary.id === 'premium')?.days[1].stops[0]).toMatch(/Zero-G OR Skydiving/)
   })

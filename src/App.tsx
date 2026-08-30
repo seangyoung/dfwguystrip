@@ -12,15 +12,15 @@ const nav: { id: View; label: string }[] = [
 ]
 
 const availabilityLabels: Record<Availability, string> = { available: 'Available', maybe: 'Maybe', unavailable: 'Unavailable' }
-const diningCategories = new Set(['Dinner show', 'Flagship dining', 'Texas dining', 'Budget dining', 'Food tour'])
+const diningCategories = new Set(['Dinner show', 'Flagship dining', 'Texas dining', 'Budget dining', 'Food tour', 'Dinner + movie'])
 const isDining = (activity: Activity) => diningCategories.has(activity.category)
 
 function photoFor(activity: Activity) {
   if (isDining(activity)) return 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80'
   if (['helicopter-tour', 'reunion-tower'].includes(activity.id)) return 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=900&q=80'
-  if (['mountain-bike', 'go-ape', 'fossil-rim'].includes(activity.id)) return 'https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=900&q=80'
+  if (['mountain-bike', 'go-ape', 'fossil-rim', 'arboretum', 'katy-trail', 'horseback'].includes(activity.id)) return 'https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=900&q=80'
   if (['sixth-floor', 'att-stadium-tour', 'museum-illusions'].includes(activity.id)) return 'https://images.unsplash.com/photo-1466442929976-97f336a657be?auto=format&fit=crop&w=900&q=80'
-  if (['zero-g', 'ifly'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
+  if (['zero-g', 'ifly', 'future-flight', 'summit-climbing', 'smash-n-bash', 'battlefield-nerf'].includes(activity.id)) return 'https://images.unsplash.com/photo-1532077795302-7c7a64d3d8af?auto=format&fit=crop&w=900&q=80'
   return 'https://images.unsplash.com/photo-1531219432768-9f540ce91ef3?auto=format&fit=crop&w=900&q=80'
 }
 
