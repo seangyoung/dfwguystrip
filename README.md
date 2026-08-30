@@ -23,4 +23,6 @@ Push to `main`, then enable **GitHub Pages** with **GitHub Actions** as the sour
 
 The interface includes seeded planning data so it is useful before a backend is connected. The SQL schema defines the production tables, roles, and row-level access policies. Connect the UI queries to the Supabase tables once the project configuration is available; this keeps individual participant responses private while coordinators can see aggregate results.
 
+After running `supabase/schema.sql` in the Supabase SQL Editor, run `supabase/seed.sql` there as well. The seed establishes the activity and candidate-date IDs required for participant votes and availability responses. It is safe to rerun.
+
 All figures labeled **Estimate** are planning figures, and source links should be rechecked before reservations are made.

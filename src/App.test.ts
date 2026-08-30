@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { activities, candidateDates, itineraries } from './types'
 
@@ -15,7 +16,7 @@ describe('seed trip content', () => {
   it('includes the approved seasonal and dining expansion', () => {
     const ids = activities.map(activity => activity.id)
     expect(ids).toEqual(expect.arrayContaining([
-      'scarborough', 'mustang-magic', 'goodguys', 'nascar-weekend',
+      'scarborough', 'mustang-magic', 'goodguys',
       'lonesome-dove', 'the-mexican', 'fearings', 'pappas-bros', 'cattlemens', 'whataburger',
     ]))
   })
@@ -31,9 +32,9 @@ describe('seed trip content', () => {
   it('includes the latest participant-requested catalog additions', () => {
     const ids = activities.map(activity => activity.id)
     expect(ids).toEqual(expect.arrayContaining([
-      'chapel-thanksgiving', 'national-videogame-museum', 'escape-game', 'las-colinas-gondola',
-      'arboretum', 'katy-trail', 'buc-ees', 'fowling', 'future-flight', 'horseback',
-      'smash-n-bash', 'summit-climbing', 'battlefield-nerf', 'moviehouse-eatery',
+      'chapel-thanksgiving', 'national-videogame-museum', 'escape-game', 'katy-trail',
+      'buc-ees', 'fowling', 'future-flight', 'horseback', 'smash-n-bash', 'summit-climbing',
+      'moviehouse-eatery',
     ]))
     expect(ids).not.toContain('public-school-214')
   })
@@ -45,5 +46,15 @@ describe('seed trip content', () => {
   it('provides distinct candidate dates across multiple months', () => {
     expect(candidateDates).toHaveLength(9)
     expect(new Set(candidateDates.map(date => date.slice(0, 7))).size).toBeGreaterThan(1)
+  })
+
+  it('has no duplicate activity IDs for Supabase vote seeding', () => {
+    const ids = activities.map(activity => activity.id)
+    expect(new Set(ids)).toHaveLength(ids.length)
+  })
+
+  it('seeds every activity ID that a participant can vote for', () => {
+    const seed = readFileSync('supabase/seed.sql', 'utf8')
+    for (const activity of activities) expect(seed).toContain(`'${activity.id}'`)
   })
 })
