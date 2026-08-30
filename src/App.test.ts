@@ -12,6 +12,14 @@ describe('seed trip content', () => {
     expect(fair?.seasonal).toContain('September 25-October 18, 2026')
   })
 
+  it('includes the approved seasonal and dining expansion', () => {
+    const ids = activities.map(activity => activity.id)
+    expect(ids).toEqual(expect.arrayContaining([
+      'scarborough', 'mustang-magic', 'goodguys', 'nascar-weekend',
+      'lonesome-dove', 'the-mexican', 'fearings', 'pappas-bros', 'cattlemens', 'whataburger',
+    ]))
+  })
+
   it('models Zero-G and skydiving as an either-or slot', () => {
     expect(itineraries.find(itinerary => itinerary.id === 'premium')?.days[1].stops[0]).toMatch(/Zero-G OR Skydiving/)
   })
