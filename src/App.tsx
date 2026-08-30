@@ -24,6 +24,9 @@ function photoFor(activity: Activity) {
   if (['fowling'].includes(activity.id)) return 'https://fowlingwarehouse.com/wp-content/uploads/2021/08/team-playing.png'
   if (['zero-g'].includes(activity.id)) return 'https://cdn.prod.website-files.com/66ba4df8caa0bf31f1be9e30/66dd4212867be43e386aa31b_20210430_Steve-Boxall_Zero-G_Research_FLL_ZG536_Flight_8072.webp'
   if (['speedway'].includes(activity.id)) return 'https://www.texasmotorspeedway.com/images/links/teamtexasad.png'
+  if (['six-flags'].includes(activity.id)) return 'https://www.sixflags.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fbsnrdz4t%2Fproduction%2F3a7a34ee12bada73ba315022234723f400ce241d-1633x980.jpg%3Fw%3D850%26h%3D490%26q%3D80%26fit%3Dclip%26auto%3Dformat%26dpr%3D2&w=1920&q=75'
+  if (['state-fair'].includes(activity.id)) return 'https://bigtex.com/wp-content/uploads/2025/05/2025_WEB_BuyTickets_NEW_Header-480x120.jpg'
+  if (['scarborough'].includes(activity.id)) return 'https://www.srfestival.com/wp-content/uploads/2024/11/cover-photo-front-gate.png'
   return 'https://images.unsplash.com/photo-1531219432768-9f540ce91ef3?auto=format&fit=crop&w=900&q=80'
 }
 
