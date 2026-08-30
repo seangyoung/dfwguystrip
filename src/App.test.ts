@@ -6,6 +6,12 @@ describe('seed trip content', () => {
     expect(activities.find(activity => activity.id === 'andretti')?.tier).toBe('alternate')
   })
 
+  it('includes the State Fair as a date-bound flagship option', () => {
+    const fair = activities.find(activity => activity.id === 'state-fair')
+    expect(fair?.tier).toBe('flagship')
+    expect(fair?.seasonal).toContain('September 25-October 18, 2026')
+  })
+
   it('models Zero-G and skydiving as an either-or slot', () => {
     expect(itineraries.find(itinerary => itinerary.id === 'premium')?.days[1].stops[0]).toMatch(/Zero-G OR Skydiving/)
   })
