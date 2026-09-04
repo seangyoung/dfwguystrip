@@ -16,6 +16,7 @@ const diningCategories = new Set(['Dinner show', 'Flagship dining', 'Texas dinin
 const isDining = (activity: Activity) => diningCategories.has(activity.category)
 
 function photoFor(activity: Activity) {
+  if (['medieval-times']).includes(activity.id)) return 'https://medt-refresh.imgix.net/wp-content/uploads/2023/12/25000756/250204_Shot06_Jousting_0093_Web-Compressed-scaled.jpg'
   if (isDining(activity)) return 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80'
   if (['reunion-tower'].includes(activity.id)) return 'https://reuniontower.com/wp-content/uploads/2021/03/GeOFamily_600x300.jpg'
   if (['fossil-rim'].includes(activity.id)) return 'https://fossilrim.org/wp-content/uploads/2026/03/DSC02452-scaled.jpg'
