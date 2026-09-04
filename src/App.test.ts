@@ -44,7 +44,9 @@ describe('seed trip content', () => {
   })
 
   it('provides distinct candidate dates across multiple months', () => {
-    expect(candidateDates).toHaveLength(9)
+    expect(candidateDates).toHaveLength(730)
+    expect(candidateDates[0]).toBe('2026-01-01')
+    expect(candidateDates[candidateDates.length - 1]).toBe('2027-12-31')
     expect(new Set(candidateDates.map(date => date.slice(0, 7))).size).toBeGreaterThan(1)
   })
 
@@ -56,5 +58,10 @@ describe('seed trip content', () => {
   it('seeds every activity ID that a participant can vote for', () => {
     const seed = readFileSync('supabase/seed.sql', 'utf8')
     for (const activity of activities) expect(seed).toContain(`'${activity.id}'`)
+  })
+
+  it('seeds the full availability-calendar range', () => {
+    const seed = readFileSync('supabase/seed.sql', 'utf8')
+    expect(seed).toContain("generate_series('2026-01-01'::date, '2027-12-31'::date")
   })
 })

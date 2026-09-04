@@ -84,4 +84,18 @@ export const itineraries: Itinerary[] = [
   ] },
 ]
 
-export const candidateDates = ['2026-09-18', '2026-09-19', '2026-09-20', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-16', '2026-10-17', '2026-10-18']
+export const availabilityStart = '2026-01-01'
+export const availabilityEnd = '2027-12-31'
+
+function datesBetween(start: string, end: string) {
+  const dates: string[] = []
+  const cursor = new Date(`${start}T00:00:00Z`)
+  const finalDay = new Date(`${end}T00:00:00Z`)
+  while (cursor <= finalDay) {
+    dates.push(cursor.toISOString().slice(0, 10))
+    cursor.setUTCDate(cursor.getUTCDate() + 1)
+  }
+  return dates
+}
+
+export const candidateDates = datesBetween(availabilityStart, availabilityEnd)

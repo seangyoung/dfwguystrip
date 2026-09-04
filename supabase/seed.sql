@@ -31,8 +31,6 @@ from unnest(array[
 on conflict (id) do nothing;
 
 insert into public.candidate_dates (day, is_open, note)
-values
-  ('2026-09-18', true, null), ('2026-09-19', true, null), ('2026-09-20', true, null),
-  ('2026-10-02', true, null), ('2026-10-03', true, null), ('2026-10-04', true, null),
-  ('2026-10-16', true, null), ('2026-10-17', true, null), ('2026-10-18', true, null)
+select day::date, true, null
+from generate_series('2026-01-01'::date, '2027-12-31'::date, interval '1 day') as dates(day)
 on conflict (day) do nothing;
