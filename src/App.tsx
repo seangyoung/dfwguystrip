@@ -17,6 +17,11 @@ const isDining = (activity: Activity) => diningCategories.has(activity.category)
 
 function photoFor(activity: Activity) {
   if (['medieval-times'].includes(activity.id)) return 'https://medt-refresh.imgix.net/wp-content/uploads/2023/12/25000756/250204_Shot06_Jousting_0093_Web-Compressed-scaled.jpg'
+  if (['lonesome-dove'].includes(activity.id)) return 'https://cdn.prod.website-files.com/673528a8e7726d366b20d200/6750a5714af5e4ee69bc5707_image_makereservationcta-2.avif'
+  if (['the-mexican'].includes(activity.id)) return 'https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://storage.googleapis.com/msgsndr/THcxbPo15I3bS0tQwL5u/media/67d9fed6c876986be1f13bae.jpeg'
+  if (['fearings'].includes(activity.id)) return 'https://mds-assets.marriott.com/cdn-cgi/image/f=auto/cms-platform-for-marriott/dalrz-fearings-restaurant/site-images/migrated-images/dean-s-kitchen.jpg?cropW=1988&cropH=1326&width=750&height=500'
+  if (['pappas-bros'].includes(activity.id)) return 'https://pappasbros.com/app/uploads/2025/12/PBSH-2-Location-Photos-scaled.jpg'
+  if (['cattlemens'].includes(activity.id)) return 'https://cattlemenssteakhouse.com/images/homepage/hero-bar-interior-3.webp'
   if (isDining(activity)) return 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80'
   if (['reunion-tower'].includes(activity.id)) return 'https://reuniontower.com/wp-content/uploads/2021/03/GeOFamily_600x300.jpg'
   if (['fossil-rim'].includes(activity.id)) return 'https://fossilrim.org/wp-content/uploads/2026/03/DSC02452-scaled.jpg'
