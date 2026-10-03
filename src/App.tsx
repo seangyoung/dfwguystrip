@@ -66,6 +66,8 @@ function App() {
   const [user, setUser] = useState<SessionUser>(null)
   const [email, setEmail] = useState('')
   const [authMessage, setAuthMessage] = useState('')
+  const [sendingMagicLink, setSendingMagicLink] = useState(false)
+  const [signInRequested, setSignInRequested] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -75,16 +77,28 @@ function App() {
     return () => listener.subscription.unsubscribe()
   }, [])
 
+  useEffect(() => {
+    if (!signInRequested || view !== 'home') return
+    document.getElementById('sign-in')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setSignInRequested(false)
+  }, [signInRequested, view])
+
   async function signIn(event: FormEvent) {
     event.preventDefault()
-    if (!hasSupabase || !supabase) {
-      setUser({ id: 'demo-user', email: email || 'guest@example.com' })
-      setAuthMessage('Preview mode: you are signed in as a demo participant. Add Supabase settings to enable magic links.')
+    if (!email.trim()) {
+      setAuthMessage('Enter your email address first, then we will send your secure sign-in link.')
       return
     }
+    if (!hasSupabase || !supabase) {
+      setAuthMessage('Participant sign-in is not configured for this deployment yet. The organizer needs to add the Supabase public URL and publishable key to GitHub Pages variables.')
+      return
+    }
+    setSendingMagicLink(true)
+    setAuthMessage('Sending your secure sign-in link...')
     const redirectTo = window.location.href.split('#')[0]
     const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } })
-    setAuthMessage(error ? error.message : 'Check your email for a secure sign-in link.')
+    setSendingMagicLink(false)
+    setAuthMessage(error ? `Could not send the sign-in link: ${error.message}` : 'Check your email for a secure sign-in link. It may take a minute to arrive.')
   }
 
   async function signOut() {
@@ -99,10 +113,10 @@ function App() {
       <button className="brand" onClick={() => setView('home')} aria-label="DFW Guys Trip home"><span>DFW</span> Guys Trip <i>26</i></button>
       <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">Menu</button>
       <nav className={menuOpen ? 'open' : ''}>{nav.map(item => <button className={view === item.id ? 'active' : ''} key={item.id} onClick={() => { setView(item.id); setMenuOpen(false) }}>{item.label}</button>)}{coordinator && <button className={view === 'admin' ? 'active admin-link' : 'admin-link'} onClick={() => { setView('admin'); setMenuOpen(false) }}>Coordinator</button>}</nav>
-      {user ? <button className="account" onClick={signOut}>{user.email.split('@')[0]} <span>Sign out</span></button> : <button className="account" onClick={() => document.getElementById('sign-in')?.scrollIntoView({ behavior: 'smooth' })}>Participant sign in</button>}
+      {user ? <button className="account" onClick={signOut}>{user.email.split('@')[0]} <span>Sign out</span></button> : <button className="account" onClick={() => { setView('home'); setSignInRequested(true) }}>Participant sign in</button>}
     </header>
     <main>
-      {view === 'home' && <Home user={user} email={email} setEmail={setEmail} authMessage={authMessage} signIn={signIn} setView={setView} />}
+      {view === 'home' && <Home user={user} email={email} setEmail={setEmail} authMessage={authMessage} sendingMagicLink={sendingMagicLink} signIn={signIn} setView={setView} />}
       {view === 'activities' && <Activities />}
       {view === 'dining' && <Dining />}
       {view === 'itineraries' && <Itineraries />}
@@ -114,13 +128,13 @@ function App() {
   </div>
 }
 
-function Home({ user, email, setEmail, authMessage, signIn, setView }: { user: SessionUser; email: string; setEmail: (value: string) => void; authMessage: string; signIn: (event: FormEvent) => void; setView: (view: View) => void }) {
+function Home({ user, email, setEmail, authMessage, sendingMagicLink, signIn, setView }: { user: SessionUser; email: string; setEmail: (value: string) => void; authMessage: string; sendingMagicLink: boolean; signIn: (event: FormEvent) => void; setView: (view: View) => void }) {
   return <>
     <section className="hero"><p className="eyebrow">THE 2026-27 DFW EDITION</p><h1>One legendary<br /><em>Texas weekend.</em></h1><p className="hero-copy">Big-ticket adventure, Texas-only stories, great food, and a plan everyone can actually agree on.</p><div className="hero-actions"><button className="primary" onClick={() => setView('itineraries')}>Explore the concepts</button><button className="text-button" onClick={() => setView('activities')}>Browse activities →</button></div><div className="hero-stamp"><b>6–10</b><span>good men<br />expected</span></div></section>
     <section className="notice"><span className="notice-mark">!</span><div><b>Planning stage: weighing dates and activities</b><p>No drinking, no gambling, no club scene. Just excellent company and an unusually good weekend.</p></div><div className="deadline"><span>Next decision</span><b>Pick dates & favorites</b><small>Before reservations open</small></div></section>
     <section className="section split-intro"><div><p className="eyebrow">THE SHORTLIST</p><h2>Choose your version of epic.</h2></div><p>We are looking for a memorable shared experience, not a packed tourist checklist. Your votes will help turn these concepts into one real trip.</p></section>
     <section className="concept-grid">{itineraries.map((item, index) => <article className={'concept c' + index} key={item.id}><p>{item.theme}</p><h3>{item.name}</h3><span>{item.subtitle}</span><button onClick={() => setView('itineraries')}>View itinerary</button></article>)}</section>
-    {!user && <section id="sign-in" className="sign-in"><div><p className="eyebrow">PARTICIPANT ACCESS</p><h2>Bring your opinion.</h2><p>Sign in to rank your must-dos, flag no-thanks activities, and mark the dates you can make.</p></div><form onSubmit={signIn}><label htmlFor="email">Email address</label><input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required /><button className="primary" type="submit">Send me a sign-in link</button>{authMessage && <p className="form-note">{authMessage}</p>}</form></section>}
+    {!user && <section id="sign-in" className="sign-in"><div><p className="eyebrow">PARTICIPANT ACCESS</p><h2>Bring your opinion.</h2><p>Enter your email and we will send a password-free sign-in link for voting and availability.</p></div><form onSubmit={signIn} noValidate><label htmlFor="email">Email address</label><input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required /><button className="primary" type="submit" disabled={sendingMagicLink}>{sendingMagicLink ? 'Sending link...' : 'Send me a sign-in link'}</button>{authMessage && <p className="form-note" role="status">{authMessage}</p>}</form></section>}
   </>
 }
 
