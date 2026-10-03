@@ -64,4 +64,11 @@ describe('seed trip content', () => {
     const seed = readFileSync('supabase/seed.sql', 'utf8')
     expect(seed).toContain("generate_series('2026-01-01'::date, '2027-12-31'::date")
   })
+
+  it('provides a usable cost figure for every catalog item', () => {
+    for (const activity of activities) {
+      expect(activity.estimate).toMatch(/\$|[Ff]ree/)
+      expect(activity.estimate).not.toMatch(/\b(?:varies|tbd)\b/i)
+    }
+  })
 })
