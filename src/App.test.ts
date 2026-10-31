@@ -65,6 +65,11 @@ describe('seed trip content', () => {
     expect(seed).toContain("generate_series('2026-01-01'::date, '2027-12-31'::date")
   })
 
+  it('documents the per-activity voting migration', () => {
+    const migration = readFileSync('supabase/activity-preferences.sql', 'utf8')
+    expect(migration).toContain("'definitely', 'interested', 'no_thanks'")
+  })
+
   it('provides a usable cost figure for every catalog item', () => {
     for (const activity of activities) {
       expect(activity.estimate).toMatch(/\$|[Ff]ree/)

@@ -2,16 +2,18 @@ import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { activities, availabilityEnd, availabilityStart, candidateDates, itineraries, type Activity, type Availability } from './types'
 import { hasSupabase, isCoordinator, supabase } from './supabase'
 
-type View = 'home' | 'activities' | 'dining' | 'itineraries' | 'vote' | 'calendar' | 'admin'
+type View = 'home' | 'activities' | 'dining' | 'itineraries' | 'calendar' | 'admin'
 type SessionUser = { email: string; id: string } | null
 type CoordinatorProfile = { id: string; email: string; display_name: string | null }
+type Preference = 'definitely' | 'interested' | 'no_thanks'
 type CoordinatorVote = { profile_id: string; activity_id: string; rank: number | null; would_avoid: boolean; comment: string | null }
+type PreferenceVote = { profile_id: string; activity_id: string; preference: Preference }
 type CoordinatorAvailability = { profile_id: string; day: string; status: Availability }
 
 const nav: { id: View; label: string }[] = [
   { id: 'home', label: 'Trip Brief' }, { id: 'activities', label: 'Activities' },
   { id: 'dining', label: 'Dining' },
-  { id: 'itineraries', label: 'Itineraries' }, { id: 'vote', label: 'Vote' }, { id: 'calendar', label: 'Calendar' },
+  { id: 'itineraries', label: 'Itineraries' }, { id: 'calendar', label: 'Calendar' },
 ]
 
 const availabilityLabels: Record<Availability, string> = { available: 'Available', maybe: 'Maybe', unavailable: 'Unavailable' }
@@ -120,12 +122,11 @@ function App() {
     </header>
     <main>
       {view === 'home' && <Home user={user} email={email} setEmail={setEmail} authMessage={authMessage} sendingMagicLink={sendingMagicLink} signIn={signIn} setView={setView} />}
-      {view === 'activities' && <Activities />}
-      {view === 'dining' && <Dining />}
+      {view === 'activities' && <Activities user={user} />}
+      {view === 'dining' && <Dining user={user} />}
       {view === 'itineraries' && <Itineraries />}
-      {view === 'vote' && <Vote user={user} />}
       {view === 'calendar' && <Calendar user={user} />}
-      {view === 'admin' && coordinator && <Admin user={user} />}
+      {view === 'admin' && coordinator && <PreferenceAdmin user={user} />}
     </main>
     <footer>DFW Guys Trip planning hub <span>•</span> estimates are planning figures, not reservations</footer>
   </div>
@@ -141,14 +142,16 @@ function Home({ user, email, setEmail, authMessage, sendingMagicLink, signIn, se
   </>
 }
 
-function Catalog({ dining }: { dining: boolean }) { const [filter, setFilter] = useState<'all' | 'flagship' | 'alternate'>('all'); const visible = activities.filter(a => isDining(a) === dining && (filter === 'all' || a.tier === filter))
+function Catalog({ dining, user }: { dining: boolean; user: SessionUser }) { const [filter, setFilter] = useState<'all' | 'flagship' | 'alternate'>('all'); const [preferences, setPreferences] = useState<Record<string, Preference>>({}); const [savingId, setSavingId] = useState(''); const [voteError, setVoteError] = useState(''); const visible = activities.filter(a => isDining(a) === dining && (filter === 'all' || a.tier === filter))
+  useEffect(() => { if (!supabase || !user || user.id === 'demo-user') return; supabase.from('activity_votes').select('activity_id, preference').eq('profile_id', user.id).then(({ data, error }) => { if (error) { setVoteError('Voting needs the latest database migration. Ask the organizer to run supabase/activity-preferences.sql.'); return } setPreferences(Object.fromEntries((data ?? []).map(vote => [vote.activity_id, vote.preference as Preference]))) }) }, [user])
+  async function setPreference(activityId: string, preference: Preference) { if (!user) { setVoteError('Sign in from the Trip Brief page to save your preferences.'); return } if (!supabase || user.id === 'demo-user') { setVoteError('Participant voting is not configured for this deployment yet.'); return } setSavingId(activityId); setVoteError(''); const { error } = await supabase.from('activity_votes').upsert({ profile_id: user.id, activity_id: activityId, preference }, { onConflict: 'profile_id,activity_id' }); if (error) setVoteError(`Could not save your preference: ${error.message}`); else setPreferences(current => ({ ...current, [activityId]: preference })); setSavingId('') }
   const heading = dining ? 'The meals worth planning around.' : 'The possible stories.'
   const eyebrow = dining ? 'DINING CATALOG' : 'ACTIVITY CATALOG'
   const lede = dining ? 'A standalone collection of special-occasion dinners, dinner shows, and food-forward experiences. Prices marked “Estimate” include only a planning approximation unless otherwise stated.' : 'Adventure, culture, competition, and landmark options. Cost figures marked “Estimate” are working planning numbers; follow each source link for current rules and prices before booking.'
-  return <section className="section page"><p className="eyebrow">{eyebrow}</p><h1>{heading}</h1><p className="lede">{lede}</p><div className="filters">{(['all', 'flagship', 'alternate'] as const).map(f => <button key={f} className={filter === f ? 'selected' : ''} onClick={() => setFilter(f)}>{f === 'all' ? 'Everything' : f}</button>)}</div><div className="activity-grid">{visible.map(a => <article className="activity" key={a.id}><div className="activity-photo" style={{ backgroundImage: `linear-gradient(180deg, rgba(10,28,20,.05), rgba(10,28,20,.64)), url(${photoFor(a)})` }}><span>{a.category}</span><b className={a.tier}>{a.tier}</b></div><div className="activity-content"><h2>{a.name}</h2><strong>{a.estimate}</strong><p>{a.note}</p><dl><div><dt>Requirements</dt><dd>{a.restriction}</dd></div><div><dt>Timing</dt><dd>{a.seasonal}</dd></div></dl><a href={a.sourceUrl} target="_blank" rel="noreferrer">Official source ↗</a></div></article>)}</div></section> }
+  return <section className="section page"><p className="eyebrow">{eyebrow}</p><h1>{heading}</h1><p className="lede">{lede}</p>{user ? <p className="vote-instructions">Choose one response per card. Your selection saves immediately and can be changed anytime.</p> : <p className="vote-instructions">Sign in to save a preference for any option.</p>}{voteError && <p className="error">{voteError}</p>}<div className="filters">{(['all', 'flagship', 'alternate'] as const).map(f => <button key={f} className={filter === f ? 'selected' : ''} onClick={() => setFilter(f)}>{f === 'all' ? 'Everything' : f}</button>)}</div><div className="activity-grid">{visible.map(a => <article className="activity" key={a.id}><div className="activity-photo" style={{ backgroundImage: `linear-gradient(180deg, rgba(10,28,20,.05), rgba(10,28,20,.64)), url(${photoFor(a)})` }}><span>{a.category}</span><b className={a.tier}>{a.tier}</b></div><div className="activity-content"><h2>{a.name}</h2><strong>{a.estimate}</strong><p>{a.note}</p><dl><div><dt>Requirements</dt><dd>{a.restriction}</dd></div><div><dt>Timing</dt><dd>{a.seasonal}</dd></div></dl>{user && <div className="preference-control" role="group" aria-label={`Your preference for ${a.name}`}>{([['definitely', 'Definitely'], ['interested', 'Interested'], ['no_thanks', 'No thanks']] as const).map(([preference, label]) => <button key={preference} className={preferences[a.id] === preference ? `selected ${preference}` : preference} onClick={() => setPreference(a.id, preference)} disabled={savingId === a.id}>{savingId === a.id && preferences[a.id] !== preference ? 'Saving...' : label}</button>)}</div>}<a href={a.sourceUrl} target="_blank" rel="noreferrer">Official source ↗</a></div></article>)}</div></section> }
 
-function Activities() { return <Catalog dining={false} /> }
-function Dining() { return <Catalog dining /> }
+function Activities({ user }: { user: SessionUser }) { return <Catalog dining={false} user={user} /> }
+function Dining({ user }: { user: SessionUser }) { return <Catalog dining user={user} /> }
 
 function Itineraries() { return <section className="section page"><p className="eyebrow">THREE SHAPES OF A WEEKEND</p><h1>Compare the routes.</h1><p className="lede">These are working concepts. We will choose one anchor experience, then refine around participant availability and real booking windows.</p><div className="itinerary-grid">{itineraries.map(item => <article className="itinerary" key={item.id}><div className="itinerary-head"><p>{item.theme}</p><h2>{item.name}</h2><strong>{item.estimatedCost}</strong></div>{item.days.map(day => <div className="day" key={day.label}><b>{day.label}</b><ul>{day.stops.map(stop => <li key={stop}>{stop}</li>)}</ul></div>)}<p className="itinerary-note">{item.id === 'premium' ? 'The Zero-G / skydiving slot is deliberately an either/or choice.' : item.subtitle}</p></article>)}</div></section> }
 
@@ -180,5 +183,74 @@ function Admin({ user }: { user: SessionUser }) { const [profiles, setProfiles] 
   const dateResults = useMemo(() => Object.entries(availability.reduce<Record<string, { available: number; maybe: number; unavailable: number }>>((summary, response) => { const date = summary[response.day] ?? { available: 0, maybe: 0, unavailable: 0 }; date[response.status] += 1; summary[response.day] = date; return summary }, {})).map(([day, totals]) => ({ day, ...totals, responseCount: totals.available + totals.maybe + totals.unavailable })).sort((a, b) => b.available - a.available || b.maybe - a.maybe || b.responseCount - a.responseCount).slice(0, 12), [availability])
   function exportCsv() { const nameFor = (profileId: string) => { const profile = profiles.find(item => item.id === profileId); return profile?.display_name || profile?.email || profileId }; const escape = (value: string | number | null | undefined) => `"${String(value ?? '').replace(/"/g, '""')}"`; const rows = [['Participant', 'Activity', 'Rank', 'Would avoid', 'Comment', 'Date', 'Availability'], ...votes.map(vote => [nameFor(vote.profile_id), activities.find(activity => activity.id === vote.activity_id)?.name ?? vote.activity_id, vote.rank, vote.would_avoid ? 'Yes' : '', vote.comment, '', '']), ...availability.map(response => [nameFor(response.profile_id), '', '', '', '', response.day, response.status])]; const url = URL.createObjectURL(new Blob([rows.map(row => row.map(escape).join(',')).join('\n')], { type: 'text/csv' })); const link = document.createElement('a'); link.href = url; link.download = 'dfw-trip-participant-responses.csv'; link.click(); URL.revokeObjectURL(url) }
   return <section className="section page admin"><p className="eyebrow">COORDINATOR VIEW</p><h1>Keep the group moving.</h1><p className="lede">Live participant responses from Supabase. Activity scores award 3 points for a first choice, 2 for second, and 1 for third.</p><div className="admin-actions"><button className="secondary" onClick={loadResults} disabled={loading}>{loading ? 'Loading results...' : 'Refresh results'}</button><button className="primary" onClick={exportCsv} disabled={loading || (!votes.length && !availability.length)}>Export responses CSV</button></div>{loadError && <p className="error">Could not load group results: {loadError}</p>}{!loading && !loadError && <><div className="dashboard-stats"><article><b>{profiles.length}</b><span>participants</span></article><article><b>{votes.filter(vote => vote.rank !== null).length}</b><span>ranked votes</span></article><article><b>{availability.length}</b><span>date responses</span></article></div><div className="admin-grid"><article><h2>Activity leaderboard</h2>{activityResults.length ? activityResults.slice(0, 10).map((result, index) => <div className="result-row" key={result.activity.id}><b>{index + 1}. {result.activity.name}</b><span>{result.score} pts · {result.first} first · {result.avoids} avoid</span></div>) : <p className="admin-hint">No activity ballots have been submitted yet.</p>}</article><article><h2>Strongest dates</h2>{dateResults.length ? dateResults.map(result => <div className="date-row" key={result.day}><b>{new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${result.day}T00:00:00Z`))}</b><span>{result.available} available</span><span>{result.maybe} maybe</span></div>) : <p className="admin-hint">No availability responses have been submitted yet.</p>}</article></div><article className="editor"><div><h2>Participant comments</h2>{votes.filter(vote => vote.comment).length ? votes.filter(vote => vote.comment).map(vote => <p className="comment" key={`${vote.profile_id}-${vote.activity_id}`}><b>{profiles.find(profile => profile.id === vote.profile_id)?.display_name || profiles.find(profile => profile.id === vote.profile_id)?.email || 'Participant'}:</b> {vote.comment}</p>) : <p className="admin-hint">No comments submitted yet.</p>}</div></article></>}<p className="admin-hint">Activities: {activities.filter(activity => !isDining(activity)).length} · Dining: {activities.filter(isDining).length} · Itineraries: {itineraries.length} · Calendar dates: {candidateDates.length}</p></section> }
+
+function PreferenceAdmin({ user }: { user: SessionUser }) {
+  const [profiles, setProfiles] = useState<CoordinatorProfile[]>([])
+  const [votes, setVotes] = useState<PreferenceVote[]>([])
+  const [availability, setAvailability] = useState<CoordinatorAvailability[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+
+  async function loadResults() {
+    if (!supabase || !user || user.id === 'demo-user') {
+      setLoading(false)
+      setLoadError('Connect Supabase and sign in with a coordinator account to see live group responses.')
+      return
+    }
+    setLoading(true)
+    setLoadError('')
+    const [profileResult, voteResult, availabilityResult] = await Promise.all([
+      supabase.from('profiles').select('id, email, display_name').order('email'),
+      supabase.from('activity_votes').select('profile_id, activity_id, preference'),
+      supabase.from('availability_responses').select('profile_id, day, status'),
+    ])
+    const error = profileResult.error ?? voteResult.error ?? availabilityResult.error
+    if (error) {
+      setLoadError(error.message)
+      setLoading(false)
+      return
+    }
+    setProfiles(profileResult.data ?? [])
+    setVotes((voteResult.data ?? []) as PreferenceVote[])
+    setAvailability((availabilityResult.data ?? []) as CoordinatorAvailability[])
+    setLoading(false)
+  }
+
+  useEffect(() => { loadResults() }, [user])
+
+  const activityResults = useMemo(() => activities.map(activity => {
+    const choices = votes.filter(vote => vote.activity_id === activity.id)
+    const definitely = choices.filter(vote => vote.preference === 'definitely').length
+    const interested = choices.filter(vote => vote.preference === 'interested').length
+    const noThanks = choices.filter(vote => vote.preference === 'no_thanks').length
+    return { activity, definitely, interested, noThanks, score: definitely * 2 + interested }
+  }).filter(result => result.definitely || result.interested || result.noThanks).sort((a, b) => b.score - a.score || b.definitely - a.definitely), [votes])
+
+  const dateResults = useMemo(() => Object.entries(availability.reduce<Record<string, { available: number; maybe: number; unavailable: number }>>((summary, response) => {
+    const date = summary[response.day] ?? { available: 0, maybe: 0, unavailable: 0 }
+    date[response.status] += 1
+    summary[response.day] = date
+    return summary
+  }, {})).map(([day, totals]) => ({ day, ...totals })).sort((a, b) => b.available - a.available || b.maybe - a.maybe).slice(0, 12), [availability])
+
+  function exportCsv() {
+    const nameFor = (profileId: string) => {
+      const profile = profiles.find(item => item.id === profileId)
+      return profile?.display_name || profile?.email || profileId
+    }
+    const escape = (value: string | null | undefined) => `"${String(value ?? '').replace(/"/g, '""')}"`
+    const rows = [['Participant', 'Activity', 'Preference', 'Date', 'Availability'],
+      ...votes.map(vote => [nameFor(vote.profile_id), activities.find(activity => activity.id === vote.activity_id)?.name ?? vote.activity_id, vote.preference, '', '']),
+      ...availability.map(response => [nameFor(response.profile_id), '', '', response.day, response.status])]
+    const url = URL.createObjectURL(new Blob([rows.map(row => row.map(escape).join(',')).join('\n')], { type: 'text/csv' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'dfw-trip-participant-responses.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return <section className="section page admin"><p className="eyebrow">COORDINATOR VIEW</p><h1>Keep the group moving.</h1><p className="lede">Live participant responses from Supabase. A `Definitely` response scores two points and `Interested` scores one.</p><div className="admin-actions"><button className="secondary" onClick={loadResults} disabled={loading}>{loading ? 'Loading results...' : 'Refresh results'}</button><button className="primary" onClick={exportCsv} disabled={loading || (!votes.length && !availability.length)}>Export responses CSV</button></div>{loadError && <p className="error">Could not load group results: {loadError}</p>}{!loading && !loadError && <><div className="dashboard-stats"><article><b>{profiles.length}</b><span>participants</span></article><article><b>{votes.length}</b><span>saved preferences</span></article><article><b>{availability.length}</b><span>date responses</span></article></div><div className="admin-grid"><article><h2>Activity leaderboard</h2>{activityResults.length ? activityResults.slice(0, 12).map((result, index) => <div className="result-row" key={result.activity.id}><b>{index + 1}. {result.activity.name}</b><span>{result.definitely} definitely · {result.interested} interested · {result.noThanks} no</span></div>) : <p className="admin-hint">No preferences have been submitted yet.</p>}</article><article><h2>Strongest dates</h2>{dateResults.length ? dateResults.map(result => <div className="date-row" key={result.day}><b>{new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${result.day}T00:00:00Z`))}</b><span>{result.available} available</span><span>{result.maybe} maybe</span></div>) : <p className="admin-hint">No availability responses have been submitted yet.</p>}</article></div></>}<p className="admin-hint">Activities: {activities.filter(activity => !isDining(activity)).length} · Dining: {activities.filter(isDining).length} · Itineraries: {itineraries.length} · Calendar dates: {candidateDates.length}</p></section>
+}
 
 export default App

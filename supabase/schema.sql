@@ -69,15 +69,10 @@ create table public.availability_responses (
 create table public.activity_votes (
   profile_id uuid not null references public.profiles(id) on delete cascade,
   activity_id text not null references public.activities(id) on delete cascade,
-  rank integer check (rank between 1 and 3),
-  would_avoid boolean not null default false,
-  comment text,
+  preference text not null check (preference in ('definitely', 'interested', 'no_thanks')),
   updated_at timestamptz not null default now(),
-  primary key (profile_id, activity_id),
-  constraint one_vote_kind check ((rank is not null and would_avoid = false) or (rank is null and would_avoid = true))
+  primary key (profile_id, activity_id)
 );
-
-create unique index activity_votes_one_rank_per_person on public.activity_votes(profile_id, rank) where rank is not null;
 
 create or replace function public.is_coordinator()
 returns boolean language sql stable security definer set search_path = public as $$

@@ -25,4 +25,6 @@ The interface includes seeded planning data so it is useful before a backend is 
 
 After running `supabase/schema.sql` in the Supabase SQL Editor, run `supabase/seed.sql` there as well. The seed establishes the activity and candidate-date IDs required for participant votes and availability responses. It is safe to rerun.
 
+To switch an existing project from ranked activity ballots to the per-card preference controls, run `supabase/activity-preferences.sql` once. It preserves earlier submissions by converting first-place rankings to `Definitely`, lower rankings to `Interested`, and prior opt-outs to `No thanks`.
+
 All figures labeled **Estimate** are planning figures, and source links should be rechecked before reservations are made.
