@@ -115,7 +115,7 @@ function App() {
   const coordinator = isCoordinator(user?.email) || user?.email === 'organizer@example.com'
   return <div className="app-shell">
     <header className="topbar">
-      <button className="brand" onClick={() => setView('home')} aria-label="DFW Guys Trip home"><span>DFW</span> Guys Trip <i>26</i></button>
+      <button className="brand" onClick={() => setView('home')} aria-label="DFW Guys Trip home"><span>DFW</span> Guys Trip <i>26/27</i></button>
       <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">Menu</button>
       <nav className={menuOpen ? 'open' : ''}>{nav.map(item => <button className={view === item.id ? 'active' : ''} key={item.id} onClick={() => { setView(item.id); setMenuOpen(false) }}>{item.label}</button>)}{coordinator && <button className={view === 'admin' ? 'active admin-link' : 'admin-link'} onClick={() => { setView('admin'); setMenuOpen(false) }}>Coordinator</button>}</nav>
       {user ? <button className="account" onClick={signOut}>{user.email.split('@')[0]} <span>Sign out</span></button> : <button className="account" onClick={() => { setView('home'); setSignInRequested(true) }}>Participant sign in</button>}
