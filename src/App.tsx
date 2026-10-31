@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { activities, availabilityEnd, availabilityStart, candidateDates, itineraries, type Activity, type Availability } from './types'
 import { hasSupabase, isCoordinator, supabase } from './supabase'
 
-type View = 'home' | 'activities' | 'dining' | 'itineraries' | 'calendar' | 'admin'
+type View = 'home' | 'activities' | 'dining' | 'calendar' | 'admin'
 type SessionUser = { email: string; id: string } | null
 type CoordinatorProfile = { id: string; email: string; display_name: string | null }
 type Preference = 'definitely' | 'interested' | 'no_thanks'
@@ -13,7 +13,7 @@ type CoordinatorAvailability = { profile_id: string; day: string; status: Availa
 const nav: { id: View; label: string }[] = [
   { id: 'home', label: 'Trip Brief' }, { id: 'activities', label: 'Activities' },
   { id: 'dining', label: 'Dining' },
-  { id: 'itineraries', label: 'Itineraries' }, { id: 'calendar', label: 'Calendar' },
+  { id: 'calendar', label: 'Calendar' },
 ]
 
 const availabilityLabels: Record<Availability, string> = { available: 'Available', maybe: 'Maybe', unavailable: 'Unavailable' }
@@ -124,7 +124,6 @@ function App() {
       {view === 'home' && <Home user={user} email={email} setEmail={setEmail} authMessage={authMessage} sendingMagicLink={sendingMagicLink} signIn={signIn} setView={setView} />}
       {view === 'activities' && <Activities user={user} />}
       {view === 'dining' && <Dining user={user} />}
-      {view === 'itineraries' && <Itineraries />}
       {view === 'calendar' && <Calendar user={user} />}
       {view === 'admin' && coordinator && <PreferenceAdmin user={user} />}
     </main>
@@ -134,10 +133,10 @@ function App() {
 
 function Home({ user, email, setEmail, authMessage, sendingMagicLink, signIn, setView }: { user: SessionUser; email: string; setEmail: (value: string) => void; authMessage: string; sendingMagicLink: boolean; signIn: (event: FormEvent) => void; setView: (view: View) => void }) {
   return <>
-    <section className="hero"><p className="eyebrow">THE 2026-27 DFW EDITION</p><h1>One legendary<br /><em>Texas weekend.</em></h1><p className="hero-copy">Big-ticket adventure, Texas-only stories, great food, and a plan everyone can actually agree on.</p><div className="hero-actions"><button className="primary" onClick={() => setView('itineraries')}>Explore the concepts</button><button className="text-button" onClick={() => setView('activities')}>Browse activities →</button></div><div className="hero-stamp"><b>6–10</b><span>good men<br />expected</span></div></section>
-    <section className="notice"><span className="notice-mark">!</span><div><b>Planning stage: weighing dates and activities</b><p>No drinking, no gambling, no club scene. Just excellent company and an unusually good weekend.</p></div><div className="deadline"><span>Next decision</span><b>Pick dates & favorites</b><small>Before reservations open</small></div></section>
-    <section className="section split-intro"><div><p className="eyebrow">THE SHORTLIST</p><h2>Choose your version of epic.</h2></div><p>We are looking for a memorable shared experience, not a packed tourist checklist. Your votes will help turn these concepts into one real trip.</p></section>
-    <section className="concept-grid">{itineraries.map((item, index) => <article className={'concept c' + index} key={item.id}><p>{item.theme}</p><h3>{item.name}</h3><span>{item.subtitle}</span><button onClick={() => setView('itineraries')}>View itinerary</button></article>)}</section>
+    <section className="hero"><p className="eyebrow">PHASE 1 · PREFERENCE SURVEY</p><h1>Help shape<br /><em>the weekend.</em></h1><p className="hero-copy">We are gathering the group’s appetite for big adventures, Texas originals, great meals, and the dates that actually work.</p><div className="hero-actions"><button className="primary" onClick={() => setView('activities')}>Choose activities</button><button className="text-button" onClick={() => setView('dining')}>Rate dining →</button></div><div className="hero-stamp"><b>6–10</b><span>good men<br />expected</span></div></section>
+    <section className="notice"><span className="notice-mark">1</span><div><b>Phase 1: tell us what works for you</b><p>No drinking, no gambling, no club scene. Rate the activities and dining options, then mark your availability.</p></div><div className="deadline"><span>Next step</span><b>Phase 2 itineraries</b><small>Built from group input</small></div></section>
+    <section className="section split-intro"><div><p className="eyebrow">WHAT WE NEED</p><h2>Three quick inputs.</h2></div><p>There is no itinerary to commit to yet. Your responses will help us build a few realistic options around what the group actually wants and when everyone can travel.</p></section>
+    <section className="concept-grid phase-grid"><article className="concept c0"><p>STEP 1</p><h3>Rate activities.</h3><span>For every option, choose Definitely, Interested, or No thanks.</span><button onClick={() => setView('activities')}>Browse activities →</button></article><article className="concept c1"><p>STEP 2</p><h3>Rate dining.</h3><span>Tell us which standout dinners, shows, and food experiences are worth planning around.</span><button onClick={() => setView('dining')}>Browse dining →</button></article><article className="concept c2"><p>STEP 3</p><h3>Mark dates.</h3><span>Use the calendar to show the dates that are available, maybe, or unavailable for you.</span><button onClick={() => setView('calendar')}>Open calendar →</button></article></section>
     {!user && <section id="sign-in" className="sign-in"><div><p className="eyebrow">PARTICIPANT ACCESS</p><h2>Bring your opinion.</h2><p>Enter your email and we will send a password-free sign-in link for voting and availability.</p></div><form onSubmit={signIn} noValidate><label htmlFor="email">Email address</label><input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required /><button className="primary" type="submit" disabled={sendingMagicLink}>{sendingMagicLink ? 'Sending link...' : 'Send me a sign-in link'}</button>{authMessage && <p className="form-note" role="status">{authMessage}</p>}</form></section>}
   </>
 }
