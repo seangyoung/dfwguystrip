@@ -10,7 +10,7 @@ describe('seed trip content', () => {
   it('includes the State Fair as a date-bound flagship option', () => {
     const fair = activities.find(activity => activity.id === 'state-fair')
     expect(fair?.tier).toBe('flagship')
-    expect(fair?.seasonal).toContain('September 25-October 18, 2026')
+    expect(fair?.seasonal).toContain('Fall 2027')
   })
 
   it('includes the approved seasonal and dining expansion', () => {
@@ -44,9 +44,10 @@ describe('seed trip content', () => {
   })
 
   it('provides distinct candidate dates across multiple months', () => {
-    expect(candidateDates).toHaveLength(730)
-    expect(candidateDates[0]).toBe('2026-01-01')
+    expect(candidateDates).toHaveLength(365)
+    expect(candidateDates[0]).toBe('2027-01-01')
     expect(candidateDates[candidateDates.length - 1]).toBe('2027-12-31')
+    expect(candidateDates.every(date => date.startsWith('2027-'))).toBe(true)
     expect(new Set(candidateDates.map(date => date.slice(0, 7))).size).toBeGreaterThan(1)
   })
 
@@ -62,7 +63,7 @@ describe('seed trip content', () => {
 
   it('seeds the full availability-calendar range', () => {
     const seed = readFileSync('supabase/seed.sql', 'utf8')
-    expect(seed).toContain("generate_series('2026-01-01'::date, '2027-12-31'::date")
+    expect(seed).toContain("generate_series('2027-01-01'::date, '2027-12-31'::date")
   })
 
   it('documents the per-activity voting migration', () => {

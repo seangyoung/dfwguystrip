@@ -32,5 +32,5 @@ on conflict (id) do nothing;
 
 insert into public.candidate_dates (day, is_open, note)
 select day::date, true, null
-from generate_series('2026-01-01'::date, '2027-12-31'::date, interval '1 day') as dates(day)
+from generate_series('2027-01-01'::date, '2027-12-31'::date, interval '1 day') as dates(day)
 on conflict (day) do nothing;
